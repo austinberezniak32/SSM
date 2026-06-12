@@ -8,14 +8,29 @@ export let isDevDb = false;
 export async function initDb() {
   const url = process.env.DATABASE_URL;
   if (url) {
-    pool = new pg.Pool({
-      connectionString: url,
-      ssl: url.includes('railway') || url.includes('rlwy') ? { rejectUnauthorized: false } : undefined,
-      max: 10,
-    });
+    // Railway's internal hostnames (postgres.railway.internal) speak plain TCP;
+    // only public proxy URLs need SSL. Try without SSL first, fall back to SSL.
+    pool = new pg.Pool({ connectionString: url, max: 10 });
+    try {
+      await pool.query('SELECT 1');
+    } catch (err) {
+      if (!/ssl/i.test(String(err.message))) throw err;
+      await pool.end().catch(() => {});
+      pool = new pg.Pool({ connectionString: url, ssl: { rejectUnauthorized: false }, max: 10 });
+      await pool.query('SELECT 1');
+    }
+    console.log('[db] connected to Postgres');
   } else {
     isDevDb = true;
-    const { newDb } = await import('pg-mem');
+    let newDb;
+    try {
+      ({ newDb } = await import('pg-mem'));
+    } catch {
+      throw new Error(
+        'DATABASE_URL is not set and the dev database (pg-mem) is not installed. ' +
+        'In production, attach a PostgreSQL database so DATABASE_URL is provided.'
+      );
+    }
     const mem = newDb();
     const adapter = mem.adapters.createPg();
     pool = new adapter.Pool();

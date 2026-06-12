@@ -250,5 +250,10 @@ app.get('/healthz', (req, res) => res.json({ ok: true }));
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 const port = process.env.PORT || 3000;
-await initDb();
+try {
+  await initDb();
+} catch (err) {
+  console.error('[startup] failed to initialize database:', err.message);
+  process.exit(1);
+}
 app.listen(port, () => console.log(`SSM Tracker listening on http://localhost:${port}`));
