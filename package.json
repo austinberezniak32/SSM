@@ -1,0 +1,25 @@
+{
+  "name": "ssm-tracker",
+  "version": "1.0.0",
+  "description": "SSM Material Tracker — construction material receiving and tracking with AI packing-slip scanning",
+  "type": "module",
+  "main": "server/index.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node server/index.js",
+    "icons": "node scripts/make-icons.js",
+    "smoke": "node scripts/browser-smoke.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.74.0",
+    "express": "^4.21.2",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "pg-mem": "^3.0.5",
+    "sharp": "^0.34.1"
+  }
+}

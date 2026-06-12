@@ -1,0 +1,41 @@
+// Settings: scanner status, display name, exports, sign out.
+import { api } from '../api.js';
+import { state, savedName, rememberName, today } from '../state.js';
+import { esc, el, toast } from '../ui.js';
+
+export function renderSettings() {
+  const me = state.me || {};
+  el('scanStatus').innerHTML = me.scanConfigured
+    ? `<div class="status-pill ok">✓ AI slip scanner is active — photos are read automatically.</div>`
+    : `<div class="status-pill bad">⚠ Scanner offline — the ANTHROPIC_API_KEY environment variable is not set on the server.</div>`;
+  el('myNameInput').value = savedName();
+  el('accountInfo').innerHTML = `Signed in as <strong>${esc(me.name || '—')}</strong> on this device.`;
+  el('devDbWarn').innerHTML = me.devDb
+    ? `<div class="info-box" style="border-left-color:var(--orange)"><strong>Dev mode:</strong> no DATABASE_URL set — data is in memory and will be lost when the server restarts.</div>`
+    : '';
+}
+
+window.saveMyName = () => {
+  const n = el('myNameInput').value.trim();
+  if (!n) { toast('Enter a name first', true); return; }
+  rememberName(n);
+  toast('Name saved');
+};
+
+window.exportBackup = () => {
+  const blob = new Blob(
+    [JSON.stringify({ jobs: state.jobs, receipts: state.receipts, pos: state.pos, exported: new Date().toISOString() }, null, 2)],
+    { type: 'application/json' }
+  );
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `ssm-backup-${today()}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('Backup exported');
+};
+
+window.logoutNow = async () => {
+  try { await api.post('/api/logout'); } catch { /* session is gone either way */ }
+  window.location.reload();
+};

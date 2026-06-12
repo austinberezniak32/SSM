@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0F2137">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SSM Track">
+<title>SSM Material Tracker</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">SSM</div>
+    <div class="login-sub">Material Tracker</div>
+    <div class="form-group">
+      <label class="form-label" style="color:#93B8E0">Your Name</label>
+      <input class="form-input" id="loginName" type="text" placeholder="e.g. Conrad S." autocomplete="name">
+    </div>
+    <div class="form-group">
+      <label class="form-label" style="color:#93B8E0">Passcode</label>
+      <input class="form-input" id="loginPass" type="password" placeholder="Crew passcode" autocomplete="current-password">
+    </div>
+    <div class="login-err" id="loginErr"></div>
+    <button class="btn btn-primary btn-full" onclick="submitLogin()">Sign In</button>
+  </div>
+</div>
+
+<div id="appHeader">
+  <button class="hdr-back" id="hdrBack" onclick="goBack()">‹</button>
+  <div class="hdr-logo">SSM</div>
+  <div class="hdr-divider"></div>
+  <div class="hdr-title" id="hdrTitle">Material Tracker</div>
+</div>
+
+<div id="contentArea">
+
+  <!-- PAGE: JOBS -->
+  <div class="page active" id="page-jobs">
+    <div class="page-body">
+      <div class="btn-row">
+        <button class="btn btn-primary" style="flex:1" onclick="openModal('scan')">📷 Scan Packing Slip</button>
+        <button class="btn btn-outline" onclick="openModal('addPO')">+ Add PO</button>
+      </div>
+      <div id="jobsEmpty" class="empty-state" style="display:none">
+        <div class="empty-icon">🏗️</div>
+        <p>No jobs yet.<br>Scan a packing slip and it will auto-sort into the right job.</p>
+      </div>
+      <div id="jobList"></div>
+    </div>
+  </div>
+
+  <!-- PAGE: JOB OVERVIEW -->
+  <div class="page" id="page-job">
+    <div class="page-body">
+      <div class="location-tiles">
+        <div class="loc-tile shop" onclick="goPage('shop')">
+          <div class="loc-tile-icon">🏭</div>
+          <div class="loc-tile-count" id="shopCount">0</div>
+          <div class="loc-tile-label">At Shop</div>
+        </div>
+        <div class="loc-tile field" onclick="goPage('field')">
+          <div class="loc-tile-icon">🚛</div>
+          <div class="loc-tile-count" id="fieldCount">0</div>
+          <div class="loc-tile-label">On Site</div>
+        </div>
+      </div>
+      <div id="jobRecentSection"></div>
+    </div>
+  </div>
+
+  <!-- PAGE: SHOP -->
+  <div class="page" id="page-shop">
+    <div class="page-body">
+      <div class="btn-row">
+        <button class="btn btn-primary" style="flex:1" onclick="openScanWith('shop')">📷 Scan</button>
+        <button class="btn btn-outline" onclick="openModal('addManual')">+ Manual</button>
+      </div>
+      <div id="shopAtShop"></div>
+      <div id="sentSection" style="margin-top:8px">
+        <div class="sent-toggle" onclick="toggleSent()">
+          <span id="sentArrow">▶</span>&nbsp;
+          <span id="sentLabel">Sent to Field (0)</span>
+        </div>
+        <div id="sentList" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: FIELD -->
+  <div class="page" id="page-field">
+    <div class="page-body">
+      <div class="btn-row">
+        <button class="btn btn-green" style="flex:1" onclick="openScanWith('direct')">📷 Scan Direct Delivery</button>
+        <button class="btn btn-outline" onclick="openModal('addManual')">+ Manual</button>
+      </div>
+      <div id="fieldOnSite"></div>
+    </div>
+  </div>
+
+  <!-- PAGE: SLIPS -->
+  <div class="page" id="page-slips">
+    <div class="page-body">
+      <div class="slips-toolbar">
+        <select id="slipJobFilter" onchange="renderSlips()">
+          <option value="">All Jobs</option>
+        </select>
+        <button class="btn btn-primary" onclick="exportSlipsCSV()">↓ Export CSV</button>
+      </div>
+      <div id="slipsEmpty" class="empty-state" style="display:none">
+        <div class="empty-icon">🧾</div>
+        <p>No packing slips yet.</p>
+      </div>
+      <div id="slipsList"></div>
+    </div>
+  </div>
+
+  <!-- PAGE: SETTINGS -->
+  <div class="page" id="page-settings">
+    <div class="page-body">
+      <div class="settings-block">
+        <div class="settings-block-title">Scanner</div>
+        <div id="scanStatus"></div>
+      </div>
+      <div class="settings-block">
+        <div class="settings-block-title">Your Name</div>
+        <p style="font-size:13px;color:var(--gray-mid);margin-bottom:12px;line-height:1.5">Pre-fills the "Received by" field when you log deliveries.</p>
+        <div style="display:flex;gap:8px">
+          <input class="form-input" id="myNameInput" type="text" placeholder="e.g. Conrad S." style="flex:1">
+          <button class="btn btn-primary" onclick="saveMyName()">Save</button>
+        </div>
+      </div>
+      <div class="settings-block">
+        <div class="settings-block-title">Export</div>
+        <p style="font-size:13px;color:var(--gray-mid);margin-bottom:12px;line-height:1.5">Everything is saved on the server automatically. Export for reporting or backup.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-primary" style="flex:1" onclick="exportSlipsCSV()">↓ Slips CSV</button>
+          <button class="btn btn-outline" style="flex:1" onclick="exportBackup()">↓ Backup JSON</button>
+        </div>
+      </div>
+      <div class="settings-block">
+        <div class="settings-block-title">Account</div>
+        <div id="accountInfo" style="font-size:14px;margin-bottom:12px"></div>
+        <button class="btn btn-outline" style="border-color:var(--red);color:var(--red)" onclick="logoutNow()">Sign Out</button>
+      </div>
+      <div id="devDbWarn"></div>
+    </div>
+  </div>
+
+</div><!-- /contentArea -->
+
+<div id="bottomNav">
+  <button class="bnav-btn active" onclick="goTab('jobs')"><div class="bnav-icon">🏗️</div><div class="bnav-label">Jobs</div></button>
+  <button class="bnav-btn" onclick="goTab('slips')"><div class="bnav-icon">🧾</div><div class="bnav-label">Slips</div></button>
+  <button class="bnav-btn" onclick="goTab('settings')"><div class="bnav-icon">⚙️</div><div class="bnav-label">Settings</div></button>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-scan">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Scan Packing Slip</div><button class="modal-close" onclick="closeModal('scan')">✕</button></div>
+    <div class="modal-body">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray-mid);margin-bottom:8px">Where is this delivery going?</div>
+      <div class="path-chooser">
+        <div class="path-btn sel-shop" id="path-shop" onclick="selectPath('shop')">
+          <span class="path-icon">🏭</span><span class="path-label">Shop</span><span class="path-sub">Received at shop first</span>
+        </div>
+        <div class="path-btn" id="path-direct" onclick="selectPath('direct')">
+          <span class="path-icon">🚛</span><span class="path-label">Direct to Site</span><span class="path-sub">Bypasses shop</span>
+        </div>
+      </div>
+      <div class="scan-zone" onclick="document.getElementById('scanFileInput').click()">
+        <div class="scan-icon">📷</div>
+        <div class="scan-label">Tap to Photograph Slip</div>
+        <div class="scan-sub">Take a photo or pick from camera roll — any packing slip format works</div>
+      </div>
+      <input type="file" id="scanFileInput" class="file-input-wrap" accept="image/*" onchange="handleScan(event)">
+      <div id="scanResult"></div>
+      <div class="info-box" style="margin-top:12px;margin-bottom:0">
+        Or look up by PO number:
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <input class="form-input" id="scanPO" type="text" placeholder="H01460-193" style="flex:1;font-family:monospace">
+          <button class="btn btn-primary" onclick="lookupPO()">Look Up</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-addPO">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Add PO</div><button class="modal-close" onclick="closeModal('addPO')">✕</button></div>
+    <div class="modal-body">
+      <div class="info-box">PO format: <strong>H01460-193</strong>. Job is extracted automatically.</div>
+      <div class="form-group"><label class="form-label">PO Number *</label><input class="form-input" id="po-num" type="text" placeholder="H01460-193" style="font-family:monospace"></div>
+      <div class="form-group"><label class="form-label">Description *</label><input class="form-input" id="po-desc" type="text"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Vendor</label><input class="form-input" id="po-vendor" type="text"></div>
+        <div class="form-group"><label class="form-label">Category</label>
+          <select class="form-select" id="po-cat"><option>Mechanical</option><option>Electrical</option><option>Civil</option><option>IT/Network</option><option>Fire Protection</option><option>Other</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Qty Ordered</label><input class="form-input" id="po-qty" type="number" value="1" inputmode="numeric"></div>
+        <div class="form-group"><label class="form-label">Status</label>
+          <select class="form-select" id="po-status"><option>Ordered</option><option>At Shop</option><option>On Site</option></select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="po-notes"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('addPO')">Cancel</button><button class="btn btn-primary" onclick="savePO()">Save PO</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-addManual">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Manual Receipt</div><button class="modal-close" onclick="closeModal('addManual')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">PO Number</label><input class="form-input" id="mr-po" type="text" placeholder="H01460-193" style="font-family:monospace"></div>
+        <div class="form-group"><label class="form-label">Vendor</label><input class="form-input" id="mr-vendor" type="text"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Description</label><input class="form-input" id="mr-desc" type="text"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Qty Received</label><input class="form-input" id="mr-qty" type="number" value="1" inputmode="numeric"></div>
+        <div class="form-group"><label class="form-label">Received By</label><input class="form-input" id="mr-by" type="text" placeholder="Your name"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Location</label>
+          <select class="form-select" id="mr-loc"><option value="shop">Shop</option><option value="direct">Direct to Site</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">Condition</label>
+          <select class="form-select" id="mr-cond"><option>Good</option><option>Damaged</option><option>Partial</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('addManual')">Cancel</button><button class="btn btn-primary" onclick="saveManual()">Log Receipt</button></div>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close">✕</button>
+  <img id="lightboxImg" src="" alt="Packing slip">
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script type="module" src="/js/app.js"></script>
+</body>
+</html>
