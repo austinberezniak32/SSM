@@ -44,6 +44,8 @@
   <symbol id="i-clipboard" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></symbol>
   <symbol id="i-calendar" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></symbol>
   <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.287 1.288L3 12l5.8 1.9a2 2 0 0 1 1.287 1.287L12 21l1.9-5.8a2 2 0 0 1 1.287-1.288L21 12l-5.8-1.9a2 2 0 0 1-1.287-1.287Z"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol>
 </svg>
 
 <!-- LOGIN -->
@@ -161,6 +163,10 @@
       <div class="settings-block">
         <div class="settings-block-title"><svg class="icon"><use href="#i-sparkles"/></svg>AI Scanner</div>
         <div id="scanStatus"></div>
+      </div>
+      <div class="settings-block">
+        <div class="settings-block-title"><svg class="icon"><use href="#i-mail"/></svg>Purchasing Forwarding</div>
+        <div id="purchStatus"></div>
       </div>
       <div class="settings-block">
         <div class="settings-block-title"><svg class="icon"><use href="#i-user"/></svg>Your Name</div>
@@ -282,6 +288,29 @@
       </div>
     </div>
     <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('addManual')">Cancel</button><button class="btn btn-primary" onclick="saveManual()">Log Receipt</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-editReceipt">
+  <div class="modal">
+    <div class="modal-grip"></div>
+    <div class="modal-header"><div class="modal-title">Edit Receipt</div><button class="modal-close" onclick="closeModal('editReceipt')" aria-label="Close"><svg class="icon"><use href="#i-x"/></svg></button></div>
+    <div class="modal-body">
+      <div class="info-box">Setting the PO assigns this receipt to the right job automatically — or type a job number directly.</div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">PO Number</label><input class="form-input" id="er-po" type="text" placeholder="H01460-193" style="font-family:var(--mono)"></div>
+        <div class="form-group"><label class="form-label">Job Number</label><input class="form-input" id="er-job" type="text" placeholder="Auto from PO" style="font-family:var(--mono)"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Vendor</label><input class="form-input" id="er-vendor" type="text"></div>
+        <div class="form-group"><label class="form-label">Received By</label><input class="form-input" id="er-by" type="text"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Condition</label>
+        <select class="form-select" id="er-cond"><option>Good</option><option>Damaged</option><option>Partial</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="er-notes"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('editReceipt')">Cancel</button><button class="btn btn-primary" onclick="saveReceiptEdit()">Save Changes</button></div>
   </div>
 </div>
 

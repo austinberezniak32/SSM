@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import { initDb, q, isDevDb } from './db.js';
 import { requireAuth, issueSession, clearSession, checkPasscode } from './auth.js';
 import { scanSlip, scanConfigured } from './scan.js';
+import { notifyPurchasing, purchasingConfigured } from './mailer.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -60,7 +61,13 @@ app.post('/api/logout', (req, res) => {
 app.use('/api', requireAuth);
 
 app.get('/api/me', (req, res) => {
-  res.json({ name: req.session.name, scanConfigured: scanConfigured(), devDb: isDevDb });
+  res.json({
+    name: req.session.name,
+    scanConfigured: scanConfigured(),
+    purchasingConfigured: purchasingConfigured(),
+    purchasingEmail: purchasingConfigured() ? process.env.PURCHASING_EMAIL : null,
+    devDb: isDevDb,
+  });
 });
 
 // ── full app state (small data set; one fetch keeps the client simple) ──
@@ -165,7 +172,46 @@ app.post('/api/receipts', async (req, res) => {
        Number(it.qty) || 0, Number(it.unitPrice) || 0, Number(it.lineTotal) || 0]
     );
   }
+
+  // Proof-of-receipt copy to purchasing — fire-and-forget so a mail hiccup
+  // never blocks the crew from logging material.
+  notifyPurchasing({
+    jobNumber, po,
+    vendor: b.vendor || '', invoiceNumber: b.invoiceNumber || '',
+    total: Number(b.total) || 0, receivedBy: b.receivedBy || '',
+    condition: b.condition || 'Good', location, notes: b.notes || '',
+    lineItems, photo: b.photo || null,
+  }).catch(err => console.warn('[mail] purchasing notification failed:', err.message));
+
   res.json({ id: receiptId, jobNumber });
+});
+
+// Edit a receipt — reassigning the PO/job moves it out of UNSORTED.
+app.put('/api/receipts/:id', async (req, res) => {
+  const id = Number(req.params.id);
+  const existing = await q('SELECT * FROM receipts WHERE id = $1', [id]);
+  if (!existing.rows.length) {
+    res.status(404).json({ error: 'Receipt not found' });
+    return;
+  }
+  const r = existing.rows[0];
+  const b = req.body || {};
+  const po = b.po !== undefined ? String(b.po).trim() : r.po;
+  const jobNumber = (String(b.jobNumber || '').trim().toUpperCase()) || extractJobNumber(po) || 'UNSORTED';
+  const jobId = await ensureJob(jobNumber, String(b.jobName || '').trim() || undefined);
+  await q(`
+    UPDATE receipts SET job_id = $1, po = $2, vendor = $3, invoice_number = $4,
+                        received_by = $5, condition = $6, notes = $7
+    WHERE id = $8`,
+    [jobId, po,
+     b.vendor !== undefined ? String(b.vendor).trim() : r.vendor,
+     b.invoiceNumber !== undefined ? String(b.invoiceNumber).trim() : r.invoice_number,
+     b.receivedBy !== undefined ? String(b.receivedBy).trim() : r.received_by,
+     b.condition !== undefined ? b.condition : r.condition,
+     b.notes !== undefined ? String(b.notes).trim() : r.notes,
+     id]
+  );
+  res.json({ ok: true, jobNumber });
 });
 
 app.post('/api/receipts/:id/send', async (req, res) => {

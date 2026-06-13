@@ -8,6 +8,9 @@ export function renderSettings() {
   el('scanStatus').innerHTML = me.scanConfigured
     ? `<div class="status-pill ok">${icon('check')}Scanner active — slip photos are read automatically.</div>`
     : `<div class="status-pill bad">${icon('alert')}Scanner offline — ANTHROPIC_API_KEY is not set on the server.</div>`;
+  el('purchStatus').innerHTML = me.purchasingConfigured
+    ? `<div class="status-pill ok">${icon('check')}Every logged receipt is emailed to ${esc(me.purchasingEmail)} with the slip photo attached.</div>`
+    : `<div class="settings-note" style="margin-bottom:0">Not set up yet. When the server has <code>PURCHASING_EMAIL</code> and <code>SMTP_*</code> variables configured, every scanned slip is automatically emailed to purchasing as proof of receipt for PO payment.</div>`;
   el('myNameInput').value = savedName();
   el('accountInfo').innerHTML = `Signed in as <strong>${esc(me.name || '—')}</strong> on this device.`;
   el('devDbWarn').innerHTML = me.devDb

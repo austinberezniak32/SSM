@@ -1,7 +1,7 @@
 // All-slips tab with job filter and CSV export.
 import { state } from '../state.js';
 import { esc, el } from '../ui.js';
-import { rcCard } from './cards.js';
+import { renderReceiptList } from './cards.js';
 
 export function renderSlips() {
   const sel = el('slipJobFilter');
@@ -12,7 +12,7 @@ export function renderSlips() {
 
   const list = sel.value ? state.receipts.filter(r => r.jobNumber === sel.value) : state.receipts;
   el('slipsEmpty').style.display = list.length ? 'none' : 'block';
-  el('slipsList').innerHTML = list.map(r => rcCard(r, { prefix: 'sl', showJob: true })).join('');
+  el('slipsList').innerHTML = renderReceiptList(list, { prefix: 'sl', showJob: true });
 }
 
 window.renderSlips = renderSlips;

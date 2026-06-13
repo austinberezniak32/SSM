@@ -7,6 +7,7 @@ import { renderJobOverview, renderShop, renderField } from './views/job.js';
 import { renderSlips } from './views/slips.js';
 import { renderSettings } from './views/settings.js';
 import './views/scan.js';
+import './views/edit.js';
 
 let pageStack = ['jobs'];
 

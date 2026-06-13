@@ -2,7 +2,7 @@
 import { api } from '../api.js';
 import { state, shopRecs, sentRecs, fieldRecs, jobRecs, refreshState, dataChanged } from '../state.js';
 import { el, toast, icon } from '../ui.js';
-import { rcCard } from './cards.js';
+import { rcCard, renderReceiptList } from './cards.js';
 
 const sectionHdr = (title, count) =>
   `<div class="section-hdr"><span class="section-hdr-title">${title}</span><span class="count">${count}</span></div>`;
@@ -32,17 +32,17 @@ export function renderShop() {
   const at = shopRecs(state.activeJob);
   const sent = sentRecs(state.activeJob);
   el('shopAtShop').innerHTML = at.length
-    ? sectionHdr('At shop', at.length) + at.map(r => rcCard(r, { showSend: true, prefix: 'sh' })).join('')
+    ? sectionHdr('At shop', at.length) + renderReceiptList(at, { showSend: true, prefix: 'sh' })
     : emptyBlock('package', 'Nothing at shop');
   el('sentLabel').textContent = `Sent to Field (${sent.length})`;
-  el('sentList').innerHTML = sent.map(r => rcCard(r, { prefix: 'se' })).join('');
+  el('sentList').innerHTML = renderReceiptList(sent, { prefix: 'se' });
 }
 
 export function renderField() {
   if (!state.activeJob) return;
   const fi = fieldRecs(state.activeJob);
   el('fieldOnSite').innerHTML = fi.length
-    ? sectionHdr('On site', fi.length) + fi.map(r => rcCard(r, { prefix: 'fi' })).join('')
+    ? sectionHdr('On site', fi.length) + renderReceiptList(fi, { prefix: 'fi' })
     : emptyBlock('truck', 'Nothing on site');
 }
 

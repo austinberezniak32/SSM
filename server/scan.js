@@ -66,7 +66,7 @@ export function scanConfigured() {
 export async function scanSlip(base64, mediaType) {
   const response = await getClient().messages.create({
     model: MODEL,
-    max_tokens: 4096,
+    max_tokens: 8192,
     output_config: { format: { type: 'json_schema', schema: SLIP_SCHEMA } },
     messages: [{
       role: 'user',

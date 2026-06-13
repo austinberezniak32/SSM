@@ -74,6 +74,27 @@ await page.click('text=Confirm Receipt');
 await page.waitForSelector('text=logged.');
 console.log('PO lookup receipt logged');
 
+// second receipt on the same PO — should group in the slips list
+await page.fill('#scanPO', 'H02000-001');
+await page.click('.po-lookup button.btn');
+await page.waitForSelector('#luQty');
+await page.click('text=Confirm Receipt');
+await page.waitForTimeout(800);
+await page.click('#modal-scan .modal-close');
+await page.click('#bottomNav .bnav-btn:nth-child(2)');
+await page.waitForSelector('#slipsList .po-group', { timeout: 5000 });
+console.log('duplicate-PO receipts grouped');
+
+// edit flow: expand a receipt, change its job assignment
+await page.locator('#slipsList .rc-header').first().click();
+await page.locator('button:has-text("Edit details")').locator('visible=true').first().click();
+await page.waitForSelector('#modal-editReceipt.open');
+await page.fill('#er-job', 'H09999');
+await page.click('text=Save Changes');
+await page.waitForSelector('#modal-editReceipt:not(.open)', { state: 'attached' });
+await page.waitForSelector('#slipsList :text("H09999")', { timeout: 5000 });
+console.log('receipt edited and reassigned to H09999');
+
 if (errors.length) {
   console.error('JS ERRORS:\n' + errors.join('\n'));
   process.exit(1);

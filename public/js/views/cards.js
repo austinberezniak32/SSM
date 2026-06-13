@@ -48,9 +48,54 @@ export function rcCard(r, { showSend = false, prefix = 'rc', showJob = false } =
         <svg class="icon rc-chevron" id="${prefix}chev${r.id}"><use href="#i-chevron-down"/></svg>
       </div>
     </button>
-    <div class="rc-items" id="${prefix}items${r.id}" style="display:none">${itemRows(r)}</div>
+    <div class="rc-items" id="${prefix}items${r.id}" style="display:none">
+      ${itemRows(r)}
+      <div class="rc-edit-row"><button class="btn btn-ghost btn-sm" onclick="openEditReceipt(${r.id})">${icon('pencil')}Edit details</button></div>
+    </div>
     ${sendBtn}
   </div>`;
+}
+
+// Renders a receipt list, grouping receipts that share the exact same PO
+// under one PO banner. Receipts without a PO (or with a unique PO) render
+// as plain cards.
+export function renderReceiptList(list, opts = {}) {
+  const prefix = opts.prefix || 'rc';
+  const groups = new Map();
+  const order = [];
+  for (const r of list) {
+    const key = r.po ? 'po:' + r.po.toUpperCase() : 'solo:' + r.id;
+    if (!groups.has(key)) { groups.set(key, []); order.push(key); }
+    groups.get(key).push(r);
+  }
+  let html = '';
+  let gi = 0;
+  for (const key of order) {
+    const rs = groups.get(key);
+    if (rs.length === 1) {
+      html += rcCard(rs[0], opts);
+      continue;
+    }
+    const gid = prefix + 'pg' + (gi++);
+    const total = rs.reduce((s, r) => s + (Number(r.total) || 0), 0);
+    const vendors = [...new Set(rs.map(r => r.vendor).filter(Boolean))];
+    html += `
+    <div class="po-group">
+      <button class="pg-header" onclick="toggleCard('${gid}','')">
+        <div class="pg-icon">${icon('clipboard')}</div>
+        <div class="pg-info">
+          <div class="pg-po">PO ${esc(rs[0].po)}</div>
+          <div class="pg-meta">${rs.length} deliveries${vendors.length ? ' · ' + esc(vendors.join(', ')) : ''}</div>
+        </div>
+        <div class="pg-right">
+          ${total > 0 ? `<span class="pg-total">${money(total)}</span>` : ''}
+          <svg class="icon rc-chevron open" id="${gid}chev"><use href="#i-chevron-down"/></svg>
+        </div>
+      </button>
+      <div class="pg-body" id="${gid}items" style="display:block">${rs.map(r => rcCard(r, opts)).join('')}</div>
+    </div>`;
+  }
+  return html;
 }
 
 window.toggleCard = (prefix, id) => {
