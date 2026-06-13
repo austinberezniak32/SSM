@@ -80,8 +80,12 @@ All `/api` routes (except login/logout) require the session cookie.
 Job numbers are extracted from PO numbers: `H01460-193` → job `H01460`.
 Receipts with no PO and no job context land in an `UNSORTED` job.
 
-## Costs
+## Scanning quality & costs
 
-Scanning uses Claude Haiku 4.5 — roughly a quarter of a cent per slip photo.
-$5 of API credit covers ~2,000 scans. Railway's Hobby plan (~$5/mo) comfortably
-runs the app + Postgres.
+Photos are cleaned up on the phone before upload — grayscale + auto-contrast
+stretch, like a scanner app — so faint thermal/thin-paper printing reads as
+near-black text. Scanning uses Claude Sonnet 4.6 by default (best accuracy on
+low-quality slips, ~2¢ per scan; $5 of credit ≈ 250 scans). Set the
+`SCAN_MODEL=claude-haiku-4-5` environment variable to cut that to ~0.7¢ per
+scan at some accuracy cost. Railway's Hobby plan (~$5/mo) comfortably runs the
+app + Postgres.

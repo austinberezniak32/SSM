@@ -1,9 +1,11 @@
 // AI packing-slip scanning. The API key lives only on the server (env var) —
-// phones never see it. Uses Claude Haiku 4.5 (lowest-cost vision model) with a
-// structured-output schema so the response is always valid JSON.
+// phones never see it. Defaults to Claude Sonnet 4.6 — slips are often faint
+// thermal/thin-paper prints and the stronger vision model reads them far more
+// reliably (~2¢/scan). Set SCAN_MODEL=claude-haiku-4-5 to trade accuracy for
+// ~0.7¢/scan. Structured-output schema keeps the response valid JSON either way.
 import Anthropic from '@anthropic-ai/sdk';
 
-const MODEL = 'claude-haiku-4-5';
+const MODEL = process.env.SCAN_MODEL || 'claude-sonnet-4-6';
 
 const SLIP_SCHEMA = {
   type: 'object',
@@ -36,6 +38,8 @@ const SLIP_SCHEMA = {
 };
 
 const PROMPT = `Read this construction packing slip / invoice photo carefully and extract its data.
+
+The photo may be low quality: faint or light-gray lettering on thin paper, low contrast, wrinkles, or shadows. Read carefully and use surrounding context (column headers, alignment, units) to recover characters that are hard to make out.
 
 Rules:
 - For qty, use the SHIPPED or RECEIVED quantity column, not ordered or backordered.

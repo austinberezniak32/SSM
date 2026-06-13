@@ -6,7 +6,38 @@ import { esc, el, toast, openModal, closeModal, icon } from '../ui.js';
 let lastParsed = null;
 let lastImage = null; // compressed JPEG data URL
 
-// Downscale on the phone before upload — keeps scans fast and DB small.
+// Document cleanup: grayscale + auto-contrast stretch (what scanner apps do).
+// Faint thermal/thin-paper printing becomes near-black on near-white, which
+// reads dramatically better — for both the AI and the humans viewing it later.
+function enhanceDocument(ctx, w, h) {
+  const img = ctx.getImageData(0, 0, w, h);
+  const d = img.data;
+  const hist = new Uint32Array(256);
+  for (let i = 0; i < d.length; i += 4) {
+    hist[(d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114) | 0]++;
+  }
+  const total = d.length / 4;
+  // Anchor black at the 0.2nd luminance percentile and white at the 95th, then
+  // stretch. Ink is sparse — often well under 1% of pixels on a faint slip — so
+  // the dark anchor must sit far down the histogram to land on text, not paper.
+  let lo = 0, hi = 255, acc = 0;
+  for (let v = 0; v < 256; v++) { acc += hist[v]; if (acc >= total * 0.002) { lo = v; break; } }
+  acc = 0;
+  for (let v = 255; v >= 0; v--) { acc += hist[v]; if (acc >= total * 0.05) { hi = v; break; } }
+  if (hi - lo < 10) return; // nearly flat image — stretching would just amplify noise
+  const map = new Uint8ClampedArray(256);
+  for (let v = 0; v < 256; v++) {
+    const norm = Math.min(1, Math.max(0, (v - lo) / (hi - lo)));
+    map[v] = 255 * Math.pow(norm, 1.2); // mild gamma pushes faint ink darker
+  }
+  for (let i = 0; i < d.length; i += 4) {
+    const g = map[(d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114) | 0];
+    d[i] = d[i + 1] = d[i + 2] = g;
+  }
+  ctx.putImageData(img, 0, 0);
+}
+
+// Downscale + enhance on the phone before upload — keeps scans fast and DB small.
 function compressImage(file, maxDim = 1600, quality = 0.85) {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
@@ -17,7 +48,9 @@ function compressImage(file, maxDim = 1600, quality = 0.85) {
       const h = Math.max(1, Math.round(img.naturalHeight * scale));
       const canvas = document.createElement('canvas');
       canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      try { enhanceDocument(ctx, w, h); } catch { /* enhancement is best-effort */ }
       URL.revokeObjectURL(url);
       resolve(canvas.toDataURL('image/jpeg', quality));
     };

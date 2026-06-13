@@ -3,3 +3,5 @@ node_modules/
 *.log
 .DS_Store
 scripts/smoke-*.png
+scripts/faint-slip.jpg
+scripts/enhanced-slip.png

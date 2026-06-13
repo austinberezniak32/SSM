@@ -212,11 +212,13 @@
           <span class="path-label">Direct to Site</span><span class="path-sub">Bypasses shop</span>
         </button>
       </div>
-      <button class="scan-zone" onclick="document.getElementById('scanFileInput').click()">
+      <button class="scan-zone" onclick="document.getElementById('scanCameraInput').click()">
         <span class="scan-icon"><svg class="icon icon-xl"><use href="#i-camera"/></svg></span>
         <span class="scan-label">Tap to scan slip</span>
-        <span class="scan-sub">Photograph it or pick from camera roll — any format works</span>
+        <span class="scan-sub">Opens the camera — faint print is enhanced automatically</span>
       </button>
+      <button class="gallery-link" onclick="document.getElementById('scanFileInput').click()"><svg class="icon"><use href="#i-image"/></svg>Or choose from camera roll</button>
+      <input type="file" id="scanCameraInput" class="file-input-wrap" accept="image/*" capture="environment" onchange="handleScan(event)">
       <input type="file" id="scanFileInput" class="file-input-wrap" accept="image/*" onchange="handleScan(event)">
       <div id="scanResult"></div>
       <div class="po-lookup">
