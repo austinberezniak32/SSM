@@ -1,0 +1,26 @@
+import { chromium } from 'playwright';
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
+await page.goto('http://localhost:3477');
+await page.screenshot({ path: '/tmp/ui-login.png' });
+await page.fill('#loginName', 'Austin');
+await page.fill('#loginPass', 'test123');
+await page.click('#loginScreen button');
+await page.waitForSelector('#loginScreen.hidden', { state: 'attached' });
+await page.waitForSelector('.job-card');
+await page.screenshot({ path: '/tmp/ui-jobs.png' });
+await page.click('.job-card');
+await page.waitForSelector('#page-job.active');
+await page.screenshot({ path: '/tmp/ui-job.png' });
+await page.click('.loc-tile.shop');
+await page.waitForSelector('#page-shop.active');
+await page.click('#shopAtShop .rc-header'); // expand line items
+await page.screenshot({ path: '/tmp/ui-shop.png' });
+await page.click('#hdrBack'); await page.click('#hdrBack');
+await page.click('text=Scan Packing Slip');
+await page.waitForSelector('#modal-scan.open');
+await page.screenshot({ path: '/tmp/ui-scan.png' });
+await page.click('#modal-scan .modal-close');
+await page.click('#bottomNav .bnav-btn:nth-child(3)');
+await page.screenshot({ path: '/tmp/ui-settings.png' });
+await browser.close();

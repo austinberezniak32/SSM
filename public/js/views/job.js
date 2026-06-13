@@ -1,8 +1,17 @@
 // Single-job pages: overview tiles, shop list, field list.
 import { api } from '../api.js';
 import { state, shopRecs, sentRecs, fieldRecs, jobRecs, refreshState, dataChanged } from '../state.js';
-import { el, toast } from '../ui.js';
+import { el, toast, icon } from '../ui.js';
 import { rcCard } from './cards.js';
+
+const sectionHdr = (title, count) =>
+  `<div class="section-hdr"><span class="section-hdr-title">${title}</span><span class="count">${count}</span></div>`;
+
+const emptyBlock = (ic, title) => `
+  <div class="empty-state" style="padding:36px 20px">
+    <div class="empty-icon">${icon(ic, 'icon icon-xl')}</div>
+    <div class="empty-title">${title}</div>
+  </div>`;
 
 export function renderJobOverview() {
   if (!state.activeJob) return;
@@ -10,8 +19,12 @@ export function renderJobOverview() {
   el('fieldCount').textContent = fieldRecs(state.activeJob).length;
   const recent = jobRecs(state.activeJob).slice(0, 3);
   el('jobRecentSection').innerHTML = recent.length
-    ? `<div class="section-hdr"><div class="blue-bar"></div><div class="section-hdr-title">Recent</div></div>${recent.map(r => rcCard(r)).join('')}`
-    : `<div class="empty-state"><div class="empty-icon">📦</div><p>No receipts yet.<br>Scan a packing slip to get started.</p></div>`;
+    ? sectionHdr('Recent activity', recent.length) + recent.map(r => rcCard(r, { prefix: 'jo' })).join('')
+    : `<div class="empty-state">
+        <div class="empty-icon">${icon('package', 'icon icon-xl')}</div>
+        <div class="empty-title">No receipts yet</div>
+        <p>Scan a packing slip to get started.</p>
+      </div>`;
 }
 
 export function renderShop() {
@@ -19,18 +32,18 @@ export function renderShop() {
   const at = shopRecs(state.activeJob);
   const sent = sentRecs(state.activeJob);
   el('shopAtShop').innerHTML = at.length
-    ? `<div class="section-hdr"><div class="blue-bar"></div><div class="section-hdr-title" style="color:var(--shop-color)">At Shop (${at.length})</div></div>${at.map(r => rcCard(r, { showSend: true })).join('')}`
-    : `<div class="empty-state" style="padding:30px 20px"><div class="empty-icon">📦</div><p>Nothing at shop.</p></div>`;
+    ? sectionHdr('At shop', at.length) + at.map(r => rcCard(r, { showSend: true, prefix: 'sh' })).join('')
+    : emptyBlock('package', 'Nothing at shop');
   el('sentLabel').textContent = `Sent to Field (${sent.length})`;
-  el('sentList').innerHTML = sent.map(r => rcCard(r)).join('');
+  el('sentList').innerHTML = sent.map(r => rcCard(r, { prefix: 'se' })).join('');
 }
 
 export function renderField() {
   if (!state.activeJob) return;
   const fi = fieldRecs(state.activeJob);
   el('fieldOnSite').innerHTML = fi.length
-    ? `<div class="section-hdr"><div class="blue-bar"></div><div class="section-hdr-title" style="color:var(--field-color)">On Site (${fi.length})</div></div>${fi.map(r => rcCard(r)).join('')}`
-    : `<div class="empty-state" style="padding:30px 20px"><div class="empty-icon">🚛</div><p>Nothing on site.</p></div>`;
+    ? sectionHdr('On site', fi.length) + fi.map(r => rcCard(r, { prefix: 'fi' })).join('')
+    : emptyBlock('truck', 'Nothing on site');
 }
 
 window.sendToField = async (id) => {
@@ -48,5 +61,5 @@ window.toggleSent = () => {
   const list = el('sentList');
   const open = list.style.display === 'none';
   list.style.display = open ? 'block' : 'none';
-  el('sentArrow').textContent = open ? '▼' : '▶';
+  el('sentArrow').classList.toggle('open', open);
 };

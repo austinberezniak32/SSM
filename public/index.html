@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#0F2137">
+<meta name="theme-color" content="#0B1E33">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,23 +12,53 @@
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/app.css">
 </head>
 <body>
 
+<!-- ICON SPRITE (Lucide outlines) -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></symbol>
+  <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+  <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-building" viewBox="0 0 24 24"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v8h4"/><path d="M18 9h2a2 2 0 0 1 2 2v11h-4"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></symbol>
+  <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-factory" viewBox="0 0 24 24"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></symbol>
+  <symbol id="i-truck" viewBox="0 0 24 24"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></symbol>
+  <symbol id="i-package" viewBox="0 0 24 24"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></symbol>
+  <symbol id="i-clipboard" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></symbol>
+  <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.287 1.288L3 12l5.8 1.9a2 2 0 0 1 1.287 1.287L12 21l1.9-5.8a2 2 0 0 1 1.287-1.288L21 12l-5.8-1.9a2 2 0 0 1-1.287-1.287Z"/></symbol>
+</svg>
+
 <!-- LOGIN -->
 <div id="loginScreen">
-  <div class="login-box">
-    <div class="login-logo">SSM</div>
-    <div class="login-sub">Material Tracker</div>
+  <div class="login-card">
+    <div class="login-mark">SSM</div>
+    <div class="login-title">Material Tracker</div>
+    <div class="login-tag">Receiving &amp; tracking, built for the crew</div>
     <div class="form-group">
-      <label class="form-label" style="color:#93B8E0">Your Name</label>
+      <label class="form-label">Your name</label>
       <input class="form-input" id="loginName" type="text" placeholder="e.g. Conrad S." autocomplete="name">
     </div>
     <div class="form-group">
-      <label class="form-label" style="color:#93B8E0">Passcode</label>
-      <input class="form-input" id="loginPass" type="password" placeholder="Crew passcode" autocomplete="current-password">
+      <label class="form-label">Crew passcode</label>
+      <input class="form-input" id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password">
     </div>
     <div class="login-err" id="loginErr"></div>
     <button class="btn btn-primary btn-full" onclick="submitLogin()">Sign In</button>
@@ -36,9 +66,8 @@
 </div>
 
 <div id="appHeader">
-  <button class="hdr-back" id="hdrBack" onclick="goBack()">‹</button>
-  <div class="hdr-logo">SSM</div>
-  <div class="hdr-divider"></div>
+  <button class="hdr-back" id="hdrBack" onclick="goBack()" aria-label="Back"><svg class="icon"><use href="#i-chevron-left"/></svg></button>
+  <div class="hdr-mark">SSM</div>
   <div class="hdr-title" id="hdrTitle">Material Tracker</div>
 </div>
 
@@ -48,12 +77,13 @@
   <div class="page active" id="page-jobs">
     <div class="page-body">
       <div class="btn-row">
-        <button class="btn btn-primary" style="flex:1" onclick="openModal('scan')">📷 Scan Packing Slip</button>
-        <button class="btn btn-outline" onclick="openModal('addPO')">+ Add PO</button>
+        <button class="btn btn-primary" style="flex:1" onclick="openModal('scan')"><svg class="icon"><use href="#i-camera"/></svg>Scan Packing Slip</button>
+        <button class="btn btn-secondary" onclick="openModal('addPO')"><svg class="icon"><use href="#i-plus"/></svg>Add PO</button>
       </div>
       <div id="jobsEmpty" class="empty-state" style="display:none">
-        <div class="empty-icon">🏗️</div>
-        <p>No jobs yet.<br>Scan a packing slip and it will auto-sort into the right job.</p>
+        <div class="empty-icon"><svg class="icon icon-xl"><use href="#i-building"/></svg></div>
+        <div class="empty-title">No jobs yet</div>
+        <p>Scan a packing slip and it will auto-sort<br>into the right job.</p>
       </div>
       <div id="jobList"></div>
     </div>
@@ -63,16 +93,16 @@
   <div class="page" id="page-job">
     <div class="page-body">
       <div class="location-tiles">
-        <div class="loc-tile shop" onclick="goPage('shop')">
-          <div class="loc-tile-icon">🏭</div>
-          <div class="loc-tile-count" id="shopCount">0</div>
-          <div class="loc-tile-label">At Shop</div>
-        </div>
-        <div class="loc-tile field" onclick="goPage('field')">
-          <div class="loc-tile-icon">🚛</div>
-          <div class="loc-tile-count" id="fieldCount">0</div>
-          <div class="loc-tile-label">On Site</div>
-        </div>
+        <button class="loc-tile shop" onclick="goPage('shop')">
+          <span class="loc-tile-icon"><svg class="icon"><use href="#i-factory"/></svg></span>
+          <span class="loc-tile-count" id="shopCount">0</span>
+          <span class="loc-tile-label">At Shop</span>
+        </button>
+        <button class="loc-tile field" onclick="goPage('field')">
+          <span class="loc-tile-icon"><svg class="icon"><use href="#i-truck"/></svg></span>
+          <span class="loc-tile-count" id="fieldCount">0</span>
+          <span class="loc-tile-label">On Site</span>
+        </button>
       </div>
       <div id="jobRecentSection"></div>
     </div>
@@ -82,15 +112,15 @@
   <div class="page" id="page-shop">
     <div class="page-body">
       <div class="btn-row">
-        <button class="btn btn-primary" style="flex:1" onclick="openScanWith('shop')">📷 Scan</button>
-        <button class="btn btn-outline" onclick="openModal('addManual')">+ Manual</button>
+        <button class="btn btn-primary" style="flex:1" onclick="openScanWith('shop')"><svg class="icon"><use href="#i-camera"/></svg>Scan</button>
+        <button class="btn btn-secondary" onclick="openModal('addManual')"><svg class="icon"><use href="#i-plus"/></svg>Manual</button>
       </div>
       <div id="shopAtShop"></div>
-      <div id="sentSection" style="margin-top:8px">
-        <div class="sent-toggle" onclick="toggleSent()">
-          <span id="sentArrow">▶</span>&nbsp;
+      <div id="sentSection" style="margin-top:12px">
+        <button class="sent-toggle" onclick="toggleSent()">
+          <svg class="icon rc-chevron" id="sentArrow"><use href="#i-chevron-down"/></svg>
           <span id="sentLabel">Sent to Field (0)</span>
-        </div>
+        </button>
         <div id="sentList" style="display:none"></div>
       </div>
     </div>
@@ -100,8 +130,8 @@
   <div class="page" id="page-field">
     <div class="page-body">
       <div class="btn-row">
-        <button class="btn btn-green" style="flex:1" onclick="openScanWith('direct')">📷 Scan Direct Delivery</button>
-        <button class="btn btn-outline" onclick="openModal('addManual')">+ Manual</button>
+        <button class="btn btn-field" style="flex:1" onclick="openScanWith('direct')"><svg class="icon"><use href="#i-camera"/></svg>Scan Direct Delivery</button>
+        <button class="btn btn-secondary" onclick="openModal('addManual')"><svg class="icon"><use href="#i-plus"/></svg>Manual</button>
       </div>
       <div id="fieldOnSite"></div>
     </div>
@@ -111,14 +141,15 @@
   <div class="page" id="page-slips">
     <div class="page-body">
       <div class="slips-toolbar">
-        <select id="slipJobFilter" onchange="renderSlips()">
+        <select id="slipJobFilter" class="form-select" onchange="renderSlips()">
           <option value="">All Jobs</option>
         </select>
-        <button class="btn btn-primary" onclick="exportSlipsCSV()">↓ Export CSV</button>
+        <button class="btn btn-secondary" onclick="exportSlipsCSV()"><svg class="icon"><use href="#i-download"/></svg>CSV</button>
       </div>
       <div id="slipsEmpty" class="empty-state" style="display:none">
-        <div class="empty-icon">🧾</div>
-        <p>No packing slips yet.</p>
+        <div class="empty-icon"><svg class="icon icon-xl"><use href="#i-receipt"/></svg></div>
+        <div class="empty-title">No packing slips yet</div>
+        <p>Every slip you scan or log shows up here.</p>
       </div>
       <div id="slipsList"></div>
     </div>
@@ -128,29 +159,29 @@
   <div class="page" id="page-settings">
     <div class="page-body">
       <div class="settings-block">
-        <div class="settings-block-title">Scanner</div>
+        <div class="settings-block-title"><svg class="icon"><use href="#i-sparkles"/></svg>AI Scanner</div>
         <div id="scanStatus"></div>
       </div>
       <div class="settings-block">
-        <div class="settings-block-title">Your Name</div>
-        <p style="font-size:13px;color:var(--gray-mid);margin-bottom:12px;line-height:1.5">Pre-fills the "Received by" field when you log deliveries.</p>
-        <div style="display:flex;gap:8px">
+        <div class="settings-block-title"><svg class="icon"><use href="#i-user"/></svg>Your Name</div>
+        <p class="settings-note">Pre-fills "Received by" when you log deliveries.</p>
+        <div style="display:flex;gap:10px">
           <input class="form-input" id="myNameInput" type="text" placeholder="e.g. Conrad S." style="flex:1">
           <button class="btn btn-primary" onclick="saveMyName()">Save</button>
         </div>
       </div>
       <div class="settings-block">
-        <div class="settings-block-title">Export</div>
-        <p style="font-size:13px;color:var(--gray-mid);margin-bottom:12px;line-height:1.5">Everything is saved on the server automatically. Export for reporting or backup.</p>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn btn-primary" style="flex:1" onclick="exportSlipsCSV()">↓ Slips CSV</button>
-          <button class="btn btn-outline" style="flex:1" onclick="exportBackup()">↓ Backup JSON</button>
+        <div class="settings-block-title"><svg class="icon"><use href="#i-download"/></svg>Export</div>
+        <p class="settings-note">Everything saves to the server automatically. Export for reporting or backup.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-secondary" style="flex:1" onclick="exportSlipsCSV()">Slips CSV</button>
+          <button class="btn btn-secondary" style="flex:1" onclick="exportBackup()">Backup JSON</button>
         </div>
       </div>
       <div class="settings-block">
-        <div class="settings-block-title">Account</div>
-        <div id="accountInfo" style="font-size:14px;margin-bottom:12px"></div>
-        <button class="btn btn-outline" style="border-color:var(--red);color:var(--red)" onclick="logoutNow()">Sign Out</button>
+        <div class="settings-block-title"><svg class="icon"><use href="#i-logout"/></svg>Account</div>
+        <div id="accountInfo" class="settings-note"></div>
+        <button class="btn btn-danger-outline" onclick="logoutNow()">Sign Out</button>
       </div>
       <div id="devDbWarn"></div>
     </div>
@@ -159,37 +190,40 @@
 </div><!-- /contentArea -->
 
 <div id="bottomNav">
-  <button class="bnav-btn active" onclick="goTab('jobs')"><div class="bnav-icon">🏗️</div><div class="bnav-label">Jobs</div></button>
-  <button class="bnav-btn" onclick="goTab('slips')"><div class="bnav-icon">🧾</div><div class="bnav-label">Slips</div></button>
-  <button class="bnav-btn" onclick="goTab('settings')"><div class="bnav-icon">⚙️</div><div class="bnav-label">Settings</div></button>
+  <button class="bnav-btn active" onclick="goTab('jobs')"><svg class="icon"><use href="#i-building"/></svg><span class="bnav-label">Jobs</span></button>
+  <button class="bnav-btn" onclick="goTab('slips')"><svg class="icon"><use href="#i-receipt"/></svg><span class="bnav-label">Slips</span></button>
+  <button class="bnav-btn" onclick="goTab('settings')"><svg class="icon"><use href="#i-settings"/></svg><span class="bnav-label">Settings</span></button>
 </div>
 
 <!-- MODALS -->
 <div class="modal-overlay" id="modal-scan">
   <div class="modal">
-    <div class="modal-header"><div class="modal-title">Scan Packing Slip</div><button class="modal-close" onclick="closeModal('scan')">✕</button></div>
+    <div class="modal-grip"></div>
+    <div class="modal-header"><div class="modal-title">Scan Packing Slip</div><button class="modal-close" onclick="closeModal('scan')" aria-label="Close"><svg class="icon"><use href="#i-x"/></svg></button></div>
     <div class="modal-body">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray-mid);margin-bottom:8px">Where is this delivery going?</div>
+      <div class="field-overline">Where is this delivery going?</div>
       <div class="path-chooser">
-        <div class="path-btn sel-shop" id="path-shop" onclick="selectPath('shop')">
-          <span class="path-icon">🏭</span><span class="path-label">Shop</span><span class="path-sub">Received at shop first</span>
-        </div>
-        <div class="path-btn" id="path-direct" onclick="selectPath('direct')">
-          <span class="path-icon">🚛</span><span class="path-label">Direct to Site</span><span class="path-sub">Bypasses shop</span>
-        </div>
+        <button class="path-btn sel-shop" id="path-shop" onclick="selectPath('shop')">
+          <span class="path-icon shop-ic"><svg class="icon"><use href="#i-factory"/></svg></span>
+          <span class="path-label">Shop</span><span class="path-sub">Received at shop first</span>
+        </button>
+        <button class="path-btn" id="path-direct" onclick="selectPath('direct')">
+          <span class="path-icon field-ic"><svg class="icon"><use href="#i-truck"/></svg></span>
+          <span class="path-label">Direct to Site</span><span class="path-sub">Bypasses shop</span>
+        </button>
       </div>
-      <div class="scan-zone" onclick="document.getElementById('scanFileInput').click()">
-        <div class="scan-icon">📷</div>
-        <div class="scan-label">Tap to Photograph Slip</div>
-        <div class="scan-sub">Take a photo or pick from camera roll — any packing slip format works</div>
-      </div>
+      <button class="scan-zone" onclick="document.getElementById('scanFileInput').click()">
+        <span class="scan-icon"><svg class="icon icon-xl"><use href="#i-camera"/></svg></span>
+        <span class="scan-label">Tap to scan slip</span>
+        <span class="scan-sub">Photograph it or pick from camera roll — any format works</span>
+      </button>
       <input type="file" id="scanFileInput" class="file-input-wrap" accept="image/*" onchange="handleScan(event)">
       <div id="scanResult"></div>
-      <div class="info-box" style="margin-top:12px;margin-bottom:0">
-        Or look up by PO number:
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <input class="form-input" id="scanPO" type="text" placeholder="H01460-193" style="flex:1;font-family:monospace">
-          <button class="btn btn-primary" onclick="lookupPO()">Look Up</button>
+      <div class="po-lookup">
+        <div class="field-overline">Or look up by PO number</div>
+        <div style="display:flex;gap:10px">
+          <input class="form-input" id="scanPO" type="text" placeholder="H01460-193" style="flex:1;font-family:var(--mono)">
+          <button class="btn btn-secondary" onclick="lookupPO()"><svg class="icon"><use href="#i-search"/></svg>Look Up</button>
         </div>
       </div>
     </div>
@@ -198,10 +232,11 @@
 
 <div class="modal-overlay" id="modal-addPO">
   <div class="modal">
-    <div class="modal-header"><div class="modal-title">Add PO</div><button class="modal-close" onclick="closeModal('addPO')">✕</button></div>
+    <div class="modal-grip"></div>
+    <div class="modal-header"><div class="modal-title">Add PO</div><button class="modal-close" onclick="closeModal('addPO')" aria-label="Close"><svg class="icon"><use href="#i-x"/></svg></button></div>
     <div class="modal-body">
-      <div class="info-box">PO format: <strong>H01460-193</strong>. Job is extracted automatically.</div>
-      <div class="form-group"><label class="form-label">PO Number *</label><input class="form-input" id="po-num" type="text" placeholder="H01460-193" style="font-family:monospace"></div>
+      <div class="info-box">PO format <strong>H01460-193</strong> — the job is extracted automatically.</div>
+      <div class="form-group"><label class="form-label">PO Number *</label><input class="form-input" id="po-num" type="text" placeholder="H01460-193" style="font-family:var(--mono)"></div>
       <div class="form-group"><label class="form-label">Description *</label><input class="form-input" id="po-desc" type="text"></div>
       <div class="form-row">
         <div class="form-group"><label class="form-label">Vendor</label><input class="form-input" id="po-vendor" type="text"></div>
@@ -217,16 +252,17 @@
       </div>
       <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="po-notes"></textarea></div>
     </div>
-    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('addPO')">Cancel</button><button class="btn btn-primary" onclick="savePO()">Save PO</button></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('addPO')">Cancel</button><button class="btn btn-primary" onclick="savePO()">Save PO</button></div>
   </div>
 </div>
 
 <div class="modal-overlay" id="modal-addManual">
   <div class="modal">
-    <div class="modal-header"><div class="modal-title">Manual Receipt</div><button class="modal-close" onclick="closeModal('addManual')">✕</button></div>
+    <div class="modal-grip"></div>
+    <div class="modal-header"><div class="modal-title">Manual Receipt</div><button class="modal-close" onclick="closeModal('addManual')" aria-label="Close"><svg class="icon"><use href="#i-x"/></svg></button></div>
     <div class="modal-body">
       <div class="form-row">
-        <div class="form-group"><label class="form-label">PO Number</label><input class="form-input" id="mr-po" type="text" placeholder="H01460-193" style="font-family:monospace"></div>
+        <div class="form-group"><label class="form-label">PO Number</label><input class="form-input" id="mr-po" type="text" placeholder="H01460-193" style="font-family:var(--mono)"></div>
         <div class="form-group"><label class="form-label">Vendor</label><input class="form-input" id="mr-vendor" type="text"></div>
       </div>
       <div class="form-group"><label class="form-label">Description</label><input class="form-input" id="mr-desc" type="text"></div>
@@ -243,12 +279,12 @@
         </div>
       </div>
     </div>
-    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('addManual')">Cancel</button><button class="btn btn-primary" onclick="saveManual()">Log Receipt</button></div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('addManual')">Cancel</button><button class="btn btn-primary" onclick="saveManual()">Log Receipt</button></div>
   </div>
 </div>
 
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-  <button class="lightbox-close">✕</button>
+  <button class="lightbox-close" aria-label="Close"><svg class="icon"><use href="#i-x"/></svg></button>
   <img id="lightboxImg" src="" alt="Packing slip">
 </div>
 

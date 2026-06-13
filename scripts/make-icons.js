@@ -7,18 +7,21 @@ import sharp from 'sharp';
 const outDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public', 'icons');
 fs.mkdirSync(outDir, { recursive: true });
 
-// SSM wordmark on the app's dark blue, with the accent bar from the header.
+// SSM wordmark on the brand gradient — matches the in-app logo chip.
 function logoSvg(size, pad = 0) {
   const s = size;
-  const inner = s - pad * 2;
-  const fontSize = Math.round(inner * 0.32);
-  const barH = Math.round(inner * 0.10);
+  const fontSize = Math.round((s - pad * 2) * 0.30);
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${s}" height="${s}">
-  <rect width="${s}" height="${s}" fill="#0F2137"/>
-  <rect x="${pad}" y="${s - pad - barH}" width="${inner}" height="${barH}" fill="#2E6DB4"/>
-  <text x="50%" y="${Math.round(s * 0.52)}" text-anchor="middle" dominant-baseline="middle"
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2E6FE8"/>
+      <stop offset="1" stop-color="#1448AC"/>
+    </linearGradient>
+  </defs>
+  <rect width="${s}" height="${s}" fill="url(#g)"/>
+  <text x="50%" y="${Math.round(s * 0.53)}" text-anchor="middle" dominant-baseline="middle"
         font-family="Arial, Helvetica, sans-serif" font-weight="bold"
-        font-size="${fontSize}" letter-spacing="${Math.round(fontSize * 0.08)}"
+        font-size="${fontSize}" letter-spacing="${Math.round(fontSize * 0.06)}"
         fill="#FFFFFF">SSM</text>
 </svg>`;
 }

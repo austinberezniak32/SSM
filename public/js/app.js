@@ -34,8 +34,8 @@ function refreshHeader() {
   const titles = {
     jobs: 'Material Tracker', slips: 'Packing Slips', settings: 'Settings',
     job: jobName,
-    shop: '🏭 Shop — ' + (state.activeJob || ''),
-    field: '🚛 Field — ' + (state.activeJob || ''),
+    shop: 'Shop · ' + (state.activeJob || ''),
+    field: 'Field · ' + (state.activeJob || ''),
   };
   el('hdrTitle').textContent = titles[cur] || cur;
 }

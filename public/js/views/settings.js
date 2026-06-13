@@ -1,17 +1,17 @@
 // Settings: scanner status, display name, exports, sign out.
 import { api } from '../api.js';
 import { state, savedName, rememberName, today } from '../state.js';
-import { esc, el, toast } from '../ui.js';
+import { esc, el, toast, icon } from '../ui.js';
 
 export function renderSettings() {
   const me = state.me || {};
   el('scanStatus').innerHTML = me.scanConfigured
-    ? `<div class="status-pill ok">✓ AI slip scanner is active — photos are read automatically.</div>`
-    : `<div class="status-pill bad">⚠ Scanner offline — the ANTHROPIC_API_KEY environment variable is not set on the server.</div>`;
+    ? `<div class="status-pill ok">${icon('check')}Scanner active — slip photos are read automatically.</div>`
+    : `<div class="status-pill bad">${icon('alert')}Scanner offline — ANTHROPIC_API_KEY is not set on the server.</div>`;
   el('myNameInput').value = savedName();
   el('accountInfo').innerHTML = `Signed in as <strong>${esc(me.name || '—')}</strong> on this device.`;
   el('devDbWarn').innerHTML = me.devDb
-    ? `<div class="info-box" style="border-left-color:var(--orange)"><strong>Dev mode:</strong> no DATABASE_URL set — data is in memory and will be lost when the server restarts.</div>`
+    ? `<div class="info-box warn"><strong>Dev mode:</strong> no DATABASE_URL set — data is in memory and will be lost when the server restarts.</div>`
     : '';
 }
 

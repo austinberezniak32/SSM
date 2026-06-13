@@ -1,7 +1,7 @@
 // Scan modal: AI slip scanning, PO lookup, Add PO, and manual receipt entry.
 import { api } from '../api.js';
 import { state, refreshState, dataChanged, extractJobNum, money, savedName, rememberName } from '../state.js';
-import { esc, el, toast, openModal, closeModal } from '../ui.js';
+import { esc, el, toast, openModal, closeModal, icon } from '../ui.js';
 
 let lastParsed = null;
 let lastImage = null; // compressed JPEG data URL
@@ -40,17 +40,17 @@ window.handleScan = async (e) => {
   if (!file) return;
   const res = el('scanResult');
   if (state.me && !state.me.scanConfigured) {
-    res.innerHTML = `<div class="info-box" style="border-left-color:var(--red)"><strong>Scanner not set up.</strong> The server is missing its ANTHROPIC_API_KEY — see Settings.</div>`;
+    res.innerHTML = `<div class="info-box bad"><strong>Scanner not set up.</strong> The server is missing its ANTHROPIC_API_KEY — see Settings.</div>`;
     return;
   }
-  res.innerHTML = `<div class="ai-processing"><div class="ai-spinner">⚙️</div><div class="ai-status">Reading packing slip...</div></div>`;
+  res.innerHTML = `<div class="ai-processing"><div class="ai-spinner"></div><div class="ai-status">Reading packing slip…</div></div>`;
   try {
     lastImage = await compressImage(file);
     lastParsed = await api.post('/api/scan', { image: lastImage.split(',')[1], mediaType: 'image/jpeg' });
     showParsed(lastParsed);
   } catch (err) {
-    res.innerHTML = `<div class="info-box" style="border-left-color:var(--orange)">Couldn't read: ${esc(err.message)}</div>`
-      + (lastImage ? `<img src="${lastImage}" style="width:100%;margin-top:10px;border:2px solid var(--gray-light)" alt="slip">` : '');
+    res.innerHTML = `<div class="info-box warn">Couldn't read: ${esc(err.message)}</div>`
+      + (lastImage ? `<img src="${lastImage}" style="width:100%;margin-top:10px;border-radius:12px;border:1px solid var(--border)" alt="slip">` : '');
   }
 };
 
@@ -61,31 +61,31 @@ function showParsed(inv) {
     <div class="pl-row">
       <input type="checkbox" class="pl-check" id="pchk${i}" checked>
       <div class="pl-desc"><div>${esc(it.description) || 'Unknown'}</div><div class="pl-pn">${esc(it.partNumber)}</div></div>
-      <div class="pl-right"><div class="pl-qty">${Number(it.qty) || 0} <span style="font-size:10px">${esc(it.unit) || 'EA'}</span></div><div class="pl-cost">${it.lineTotal > 0 ? money(it.lineTotal) : ''}</div></div>
+      <div class="pl-right"><div class="pl-qty">${Number(it.qty) || 0} <span class="unit">${esc(it.unit) || 'EA'}</span></div><div class="pl-cost">${it.lineTotal > 0 ? money(it.lineTotal) : ''}</div></div>
     </div>`).join('');
   const thumb = lastImage
-    ? `<img src="${lastImage}" style="width:60px;height:60px;object-fit:cover;border:2px solid var(--blue);cursor:pointer;flex-shrink:0" onclick="openLb(event,'${lastImage}')" alt="slip">`
+    ? `<img src="${lastImage}" style="width:62px;height:62px;object-fit:cover;border-radius:12px;border:1px solid var(--border);cursor:pointer;flex-shrink:0" onclick="openLb(event,'${lastImage}')" alt="slip">`
     : '';
   el('scanResult').innerHTML = `
     <div class="parsed-invoice">
-      <div class="parsed-hdr"><span>✅ ${(inv.lineItems || []).length} items</span><span style="font-size:12px;opacity:.8">${money(inv.total)}</span></div>
-      <div style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-bottom:1px solid var(--gray-light)">
+      <div class="parsed-hdr"><span>${(inv.lineItems || []).length} items found</span><span class="amt">${money(inv.total)}</span></div>
+      <div style="display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-bottom:1px solid var(--border)">
         ${thumb}
-        <div class="pm-grid" style="flex:1;padding:0;border:none;gap:6px">
+        <div class="pm-grid" style="flex:1">
           <div><div class="pm-label">Vendor</div><div class="pm-val">${esc(inv.vendor) || '—'}</div></div>
           <div><div class="pm-label">Invoice #</div><div class="pm-val">${esc(inv.invoiceNumber) || '—'}</div></div>
-          <div><div class="pm-label">Customer PO</div><div class="pm-val" style="font-family:monospace;font-size:12px">${esc(inv.customerPO) || '—'}</div></div>
-          <div><div class="pm-label">Job</div><div class="pm-val" style="color:var(--blue);font-weight:800">${esc(nameHint) || '—'}</div></div>
+          <div><div class="pm-label">Customer PO</div><div class="pm-val" style="font-family:var(--mono);font-size:12px">${esc(inv.customerPO) || '—'}</div></div>
+          <div><div class="pm-label">Job</div><div class="pm-val" style="color:var(--primary)">${esc(nameHint) || '—'}</div></div>
         </div>
       </div>
-      <div style="padding:7px 14px;background:var(--blue-pale);font-size:11px;color:var(--gray-mid)">Uncheck anything not in this shipment:</div>
+      <div class="parsed-note">Uncheck anything not in this shipment:</div>
       ${rows}
       <div class="parsed-actions">
         <input class="form-input" id="scanBy" placeholder="Received by (your name)" value="${esc(savedName())}">
         <select class="form-select" id="scanCond"><option>Good</option><option>Damaged</option><option>Partial</option></select>
-        <div style="display:flex;gap:8px">
-          <button class="btn btn-outline" style="flex:1" onclick="cancelScan()">Cancel</button>
-          <button class="btn btn-primary" style="flex:2" onclick="logScan()">✓ Log Receipt</button>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-ghost" style="flex:1" onclick="cancelScan()">Cancel</button>
+          <button class="btn btn-primary" style="flex:2" onclick="logScan()">${icon('check')}Log Receipt</button>
         </div>
       </div>
     </div>`;
@@ -97,7 +97,7 @@ window.cancelScan = () => {
   el('scanResult').innerHTML = '';
 };
 
-window.logScan = async (btn) => {
+window.logScan = async () => {
   if (!lastParsed) { toast('No data', true); return; }
   const by = el('scanBy').value.trim() || 'Unknown';
   const cond = el('scanCond').value;
@@ -136,19 +136,19 @@ window.lookupPO = () => {
   const match = state.pos.find(p => p.po.toUpperCase() === po.toUpperCase());
   const res = el('scanResult');
   if (!match) {
-    res.innerHTML = `<div class="info-box" style="border-left-color:var(--orange)">PO <strong>${esc(po)}</strong> not found.</div>`;
+    res.innerHTML = `<div class="info-box warn">PO <strong>${esc(po)}</strong> not found.</div>`;
     return;
   }
   res.innerHTML = `
-    <div style="background:var(--white);border:2px solid var(--blue);padding:14px">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;text-transform:uppercase;color:var(--blue-dark);margin-bottom:10px">${esc(match.po)} — ${esc(match.description)}</div>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <div style="display:flex;gap:8px">
+    <div class="parsed-invoice" style="padding:16px">
+      <div style="font-size:14.5px;font-weight:700;margin-bottom:12px">${esc(match.po)} — ${esc(match.description)}</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;gap:10px">
           <input class="form-input" id="luQty" type="number" value="1" style="flex:1" inputmode="numeric">
           <select class="form-select" id="luCond" style="flex:1"><option>Good</option><option>Damaged</option><option>Partial</option></select>
         </div>
         <input class="form-input" id="luBy" placeholder="Your name" value="${esc(savedName())}">
-        <button class="btn btn-primary btn-full" onclick="confirmLu(${match.id})">✓ Confirm Receipt</button>
+        <button class="btn btn-primary btn-full" onclick="confirmLu(${match.id})">${icon('check')}Confirm Receipt</button>
       </div>
     </div>`;
 };
@@ -170,7 +170,7 @@ window.confirmLu = async (poId) => {
       location: state.scanPath,
       lineItems: [{ partNumber: '', description: po.description, unit: 'EA', qty, unitPrice: 0, lineTotal: 0 }],
     });
-    el('scanResult').innerHTML = `<div class="info-box" style="border-left-color:var(--green)">✅ ${qty} × ${esc(po.description)} logged.</div>`;
+    el('scanResult').innerHTML = `<div class="info-box good">${qty} × ${esc(po.description)} logged.</div>`;
     await refreshState();
     dataChanged();
     toast('Receipt logged');

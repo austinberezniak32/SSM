@@ -7,11 +7,15 @@ export function esc(s) {
   ));
 }
 
+// Inline SVG from the sprite in index.html.
+export const icon = (name, cls = 'icon') =>
+  `<svg class="${cls}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
+
 export function toast(msg, err) {
   const wrap = el('toastWrap');
   const t = document.createElement('div');
   t.className = 'toast' + (err ? ' err' : '');
-  t.textContent = (err ? '⚠ ' : '✓ ') + msg;
+  t.innerHTML = icon(err ? 'alert' : 'check') + `<span>${esc(msg)}</span>`;
   wrap.appendChild(t);
   setTimeout(() => t.remove(), 3500);
 }

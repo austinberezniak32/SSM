@@ -56,7 +56,7 @@ await page.screenshot({ path: 'scripts/smoke-settings.png' });
 
 // manual receipt via modal on jobs tab
 await page.click('#bottomNav .bnav-btn:nth-child(1)');
-await page.click('text=+ Add PO');
+await page.click('text=Add PO');
 await page.fill('#po-num', 'H02000-001');
 await page.fill('#po-desc', 'Smoke test valve');
 await page.click('#modal-addPO .modal-footer .btn-primary');
@@ -65,12 +65,12 @@ console.log('PO added, toast shown');
 await page.waitForSelector('#modal-addPO:not(.open)', { state: 'attached' });
 
 // PO lookup path in scan modal
-await page.click('text=📷 Scan Packing Slip');
+await page.click('text=Scan Packing Slip');
 await page.fill('#scanPO', 'H02000-001');
-await page.click('text=Look Up');
+await page.click('.po-lookup button.btn');
 await page.waitForSelector('#luQty');
 await page.fill('#luBy', 'Smoke Tester');
-await page.click('text=✓ Confirm Receipt');
+await page.click('text=Confirm Receipt');
 await page.waitForSelector('text=logged.');
 console.log('PO lookup receipt logged');
 
